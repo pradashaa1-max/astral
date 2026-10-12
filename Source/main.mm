@@ -302,28 +302,21 @@ static void StandRise_SilentAim(const Ent& t) {
 - (void)rebuildMenu {
     for (UIView *v in [self.scroll.subviews copy]) [v removeFromSuperview];
     CGFloat y = 6;
-    struct Item { NSString *t; BOOL *p; int tag; };
-    Item list[12];
-    int n = 0;
     if (gMenuTab == 0) {
-        list[n++] = {@"ESP", &gEsp, 1};
-        list[n++] = {@"Box", &gEspBox, 2};
-        list[n++] = {@"Name", &gEspName, 3};
-        list[n++] = {@"Health", &gEspHP, 4};
-        list[n++] = {@"Distance", &gEspDist, 5};
-        list[n++] = {@"Snaplines", &gEspSnap, 6};
+        [self.scroll addSubview:[self row:@"ESP" on:gEsp y:y tag:1]]; y += 46;
+        [self.scroll addSubview:[self row:@"Box" on:gEspBox y:y tag:2]]; y += 46;
+        [self.scroll addSubview:[self row:@"Name" on:gEspName y:y tag:3]]; y += 46;
+        [self.scroll addSubview:[self row:@"Health" on:gEspHP y:y tag:4]]; y += 46;
+        [self.scroll addSubview:[self row:@"Distance" on:gEspDist y:y tag:5]]; y += 46;
+        [self.scroll addSubview:[self row:@"Snaplines" on:gEspSnap y:y tag:6]]; y += 46;
     } else if (gMenuTab == 1) {
-        list[n++] = {@"Aimbot", &gAim, 10};
-        list[n++] = {@"Silent Aim", &gAimSilent, 11};
-        list[n++] = {@"Team Check", &gAimTeam, 12};
-        list[n++] = {@"Draw FOV", &gAimFovDraw, 13};
+        [self.scroll addSubview:[self row:@"Aimbot" on:gAim y:y tag:10]]; y += 46;
+        [self.scroll addSubview:[self row:@"Silent Aim" on:gAimSilent y:y tag:11]]; y += 46;
+        [self.scroll addSubview:[self row:@"Team Check" on:gAimTeam y:y tag:12]]; y += 46;
+        [self.scroll addSubview:[self row:@"Draw FOV" on:gAimFovDraw y:y tag:13]]; y += 46;
     } else {
-        list[n++] = {@"Hide Recording", &gHideRec, 20};
-        list[n++] = {@"Antiban", &gAntiban, 21};
-    }
-    for (int i = 0; i < n; i++) {
-        [self.scroll addSubview:[self row:list[i].t on:*list[i].p y:y tag:list[i].tag]];
-        y += 46;
+        [self.scroll addSubview:[self row:@"Hide Recording" on:gHideRec y:y tag:20]]; y += 46;
+        [self.scroll addSubview:[self row:@"Antiban" on:gAntiban y:y tag:21]]; y += 46;
     }
     self.scroll.contentSize = CGSizeMake(self.scroll.bounds.size.width, y + 12);
 }
