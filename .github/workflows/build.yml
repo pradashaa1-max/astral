@@ -1,0 +1,80 @@
+name: Build Astral Cheat tipa
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app || true
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Build arm64
+        run: |
+          set -e
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          APPDIR="$PWD/Payload/AstralCheat.app"
+          mkdir -p "$APPDIR"
+          test -f Source/main.mm || { echo "missing Source/main.mm"; exit 1; }
+          xcrun -sdk iphoneos clang++ \
+            -arch arm64 \
+            -mios-version-min=15.0 \
+            -isysroot "$SDK" \
+            -framework UIKit \
+            -framework Foundation \
+            -framework QuartzCore \
+            -framework CoreGraphics \
+            -framework AVFoundation \
+            -fobjc-arc \
+            -O2 \
+            -o "$APPDIR/AstralCheat" \
+            Source/main.mm
+          xcrun -sdk iphoneos strip -x "$APPDIR/AstralCheat"
+          file "$APPDIR/AstralCheat"
+          ls -lh "$APPDIR/AstralCheat"
+
+      - name: ldid
+        run: brew install ldid
+
+      - name: Sign
+        run: |
+          APPDIR="$PWD/Payload/AstralCheat.app"
+          cat > /tmp/ent.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>platform-application</key><true/>
+          <key>com.apple.private.security.no-container</key><true/>
+          <key>com.apple.private.skip-library-validation</key><true/>
+          <key>get-task-allow</key><true/>
+          <key>com.apple.security.exception.mach-lookup.global-name</key>
+          <array><string>com.apple.audio.AudioSession</string></array>
+          </dict></plist>
+          EOF
+          python3 -c "p=open('/tmp/ent.plist').read().splitlines();open('/tmp/ent.plist','w').write('\n'.join(x.lstrip() for x in p)+'\n')"
+          ldid -S/tmp/ent.plist "$APPDIR/AstralCheat"
+          echo signed
+
+      - name: Package tipa
+        run: |
+          APPDIR="$PWD/Payload/AstralCheat.app"
+          if [ ! -f "$APPDIR/Info.plist" ]; then
+            echo "ERROR no Info.plist"; exit 1
+          fi
+          zip -0 -r AstralCheat.tipa Payload
+          ls -lh AstralCheat.tipa
+          unzip -l AstralCheat.tipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AstralCheat-tipa
+          path: AstralCheat.tipa
+          retention-days: 14
