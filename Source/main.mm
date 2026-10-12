@@ -17,6 +17,7 @@
 #include <string>
 #include <mutex>
 #include <algorithm>
+#include <cstdint>
 
 #define ASTRAL_TG @"https://t.me/Astral_Cheats"
 
@@ -67,13 +68,13 @@ static M4 gVM;
 
 // Field offsets — re-derive with Il2CppDumper after game update
 namespace Off {
-    constexpr uint32_t Transform_Pos   = 0x90;
-    constexpr uint32_t Player_Health   = 0x48;
-    constexpr uint32_t Player_MaxHP    = 0x4C;
-    constexpr uint32_t Player_Team     = 0x5C;
-    constexpr uint32_t Player_IsDead   = 0x60;
-    constexpr uint32_t Aim_Pitch       = 0x40;
-    constexpr uint32_t Aim_Yaw         = 0x44;
+    const uint32_t Transform_Pos   = 0x90;
+    const uint32_t Player_Health   = 0x48;
+    const uint32_t Player_MaxHP    = 0x4C;
+    const uint32_t Player_Team     = 0x5C;
+    const uint32_t Player_IsDead   = 0x60;
+    const uint32_t Aim_Pitch       = 0x40;
+    const uint32_t Aim_Yaw         = 0x44;
 }
 
 static bool W2S(const V3& w, V2& o, float sw, float sh) {
@@ -348,7 +349,8 @@ static void StandRise_SilentAim(const Ent& t) {
 
     if (gEsp) {
         std::lock_guard<std::mutex> lk(gEntMtx);
-        for (const auto& e : gEnts) {
+        for (size_t ei = 0; ei < gEnts.size(); ei++) {
+            const Ent& e = gEnts[ei];
             if (e.local || e.dead) continue;
             if (gAimTeam && e.team == gLocalTeam) continue;
             V2 feet, head;
