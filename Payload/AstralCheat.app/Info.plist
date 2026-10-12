@@ -6,6 +6,8 @@
 	<string>Astral Cheat</string>
 	<key>CFBundleExecutable</key>
 	<string>AstralCheat</string>
+	<key>CFBundleIconFile</key>
+	<string>icon.png</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.astral.cheat</string>
 	<key>CFBundleName</key>
@@ -13,11 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.0</string>
+	<string>2.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>200</string>
-	<key>CFBundleIconFile</key>
-	<string>icon.png</string>
+	<string>220</string>
 	<key>NSPrincipalClass</key>
 	<string>HUDMainApplication</string>
 	<key>UIApplicationSystemWindowsSecureKey</key>
